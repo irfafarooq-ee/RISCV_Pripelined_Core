@@ -1,7 +1,0 @@
-pc,instr,gpr,csr,binary,mode,instr_str,operand,pad
-80000000,addi,t0:00000000,,00000293,3,"addi	x5,x0,0","t0,zero,0",
-80000000,addi,t0:00000000,,00000293,3,"addi	x5,x0,0","t0,zero,0",
-80000000,addi,t0:00000000,,00000293,3,"addi	x5,x0,0","t0,zero,0",
-80000004,addi,t1:00000000,,00000313,3,"addi	x6,x0,0","t1,zero,0",
-8000000c,auipc,s6:8000000c,,00000b17,3,"auipc	x22,0x0","s6,0x0",
-80000010,addi,s6:80000018,,00cb0b13,3,"addi	x22,x22,12","s6,s6,12",
