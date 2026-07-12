@@ -38,17 +38,17 @@ end
 // read operation
 always_ff @(posedge clk) begin
     if (read_en)
-        rdata = dmem[word_index];
+        rdata <= dmem[word_index];
     else
-        rdata = 32'b0;
+        rdata <= 32'b0;
 end
 
 // acknowledge the transaction
-always_ff @(negedge clk, negedge reset_n) begin
+    always_ff @(posedge clk, negedge reset_n) begin
     if(~reset_n) begin
         ack <= 1'b0;
     end else begin
-        ack <= (write_en | read_en) & ~ack;
+        ack <= (write_en | read_en);
     end
 end
 
