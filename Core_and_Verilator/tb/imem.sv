@@ -1,52 +1,32 @@
-`timescale 1ns / 1ps
-
+/*
+imem imem_inst (
+    .addr(imem_addr),
+    .inst(imem_inst)
+);
+*/
 module imem #(
-    parameter IMEM_DEPTH = 32*256,
-    parameter BASE_ADDR = 32'h80000000,
-    parameter string DEFAULT_TEST = "riscv_arithmetic_basic_test",
-    parameter int    DEFAULT_IDX  = 0
+    parameter IMEM_DEPTH = 32*1024
 )(
     input logic clk, 
     input logic [31:0] addr,
     output logic [31:0] inst
 );
 
-logic [31:0] address;
-assign address = addr - BASE_ADDR;
 logic [31:0] imem [0:IMEM_DEPTH-1];
+logic [31:0] address;
 
-always_comb begin
+always_ff @(posedge clk) begin
+    address = addr - 32'h8000_0000;
     inst = imem[address >> 2];
 end
 
 // initialize the imem using imem.mem file
 initial begin
     `ifdef verilator
-        string test_name;
-            int    test_idx;
-            string fname;
-    
-            // Get test name from plusargs or use default
-            if (!$value$plusargs("TEST=%s", test_name)) begin
-                test_name = DEFAULT_TEST;
-            end
-    
-            // Get index from plusargs or use default
-            if (!$value$plusargs("IDX=%d", test_idx)) begin
-                test_idx = DEFAULT_IDX;
-            end
-    
-            // Build file path dynamically
-            fname = $sformatf("/mnt/c/CAO/lab8/tests/%s/imem_%0d.mem", test_name, test_idx);
-    
-            $display("IMEM: Loading memory from %s", fname);
-            $readmemh(fname, imem);
-    `else
-        $readmemh("/mnt/c/CAO/lab8/tests/riscv_mmu_stress_test/imem_0.mem", imem);
+        $readmemh("/mnt/c/Computer_Architecture/RISCV_Pripelined_Core/Core_and_Verilator/tests/imem_0.mem", imem);
+    `else 
+        $readmemh("/mnt/c/Computer_Architecture/RISCV_Pripelined_Core/Core_and_Verilator/tests/imem.mem", imem);
     `endif
 end
 
-
-
 endmodule
-

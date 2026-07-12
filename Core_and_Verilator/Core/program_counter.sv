@@ -7,7 +7,7 @@ module program_counter #(parameter PROG_VALUE = 32)(
     
     always @(posedge clk or negedge rst) begin 
         if (!rst) begin
-            pc <= 32'h80000000;
+            pc <= 32'h8000_0000;
             write_en = 0;
             
         end else if(!write_en)

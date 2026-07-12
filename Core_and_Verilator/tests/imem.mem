@@ -1,0 +1,13 @@
+0x10000297	// auipc x5 65536	la t0, byte_array # t0 = address of byte_array
+0x00028293	// addi x5 x5 0	la t0, byte_array # t0 = address of byte_array
+0x10000317	// auipc x6 65536	la t1, word_array # t1 = address to store word_array
+0xFFD30313	// addi x6 x6 -3	la t1, word_array # t1 = address to store word_array
+0x00500393	// addi x7 x0 5	li t2, 5
+0x00038E63	// beq x7 x0 28	beqz t2, end
+0x00028E03	// lb x28 0(x5)	lb t3, 0(t0)
+0x01C32023	// sw x28 0(x6)	sw t3, 0(t1)
+0x00128293	// addi x5 x5 1	addi t0, t0, 1
+0x00430313	// addi x6 x6 4	addi t1, t1, 4
+0xFFF38393	// addi x7 x7 -1	addi t2, t2, -1
+0xFE9FF06F	// jal x0 -24	j loop
+0x0000006F	// jalr x0 0(x5)	jalr t4, 0(t4)

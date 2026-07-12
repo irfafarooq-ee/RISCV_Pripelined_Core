@@ -1,12 +1,9 @@
 module dmem #(
-    parameter DMEM_DEPTH = 32*1024,
-    parameter BASE_ADDR  = 32'h8000_8000,   // SRAM base address
-    parameter string DEFAULT_TEST = "riscv_arithmetic_basic_test",
-    parameter int    DEFAULT_IDX  = 0
+    parameter DMEM_DEPTH = 32*1024
 )(
     input logic clk,
     input logic reset_n,
-    input logic [31:0] addr,    // external address
+    input logic [31:0] addr,
     input logic [31:0] wdata,
     input logic [3:0] wstrb,
     input logic write_en,
@@ -21,8 +18,8 @@ logic [31:0] word_index;
 
 // compute the local index in memory
 always_comb begin
-    if (addr >= BASE_ADDR)
-        local_addr = addr - BASE_ADDR;
+    if (addr >= 32'h9000_0000)
+        local_addr = addr - 32'h9000_0000;
     else
         local_addr = 32'd0; // optional: default/fault for out-of-range access
     word_index = local_addr[31:2];  // divide by 4 for word indexing
@@ -39,46 +36,29 @@ always_ff @(posedge clk) begin
 end
 
 // read operation
-always_comb begin
+always_ff @(posedge clk) begin
     if (read_en)
         rdata = dmem[word_index];
     else
         rdata = 32'b0;
 end
 
-
 // acknowledge the transaction
-always_comb begin
-    ack = write_en | read_en;
+always_ff @(negedge clk, negedge reset_n) begin
+    if(~reset_n) begin
+        ack <= 1'b0;
+    end else begin
+        ack <= (write_en | read_en) & ~ack;
+    end
 end
 
 // initialize the memory using dmem.mem
 initial begin
     `ifdef verilator
-        string test_name;
-        int    test_idx;
-        string fname;
-
-        // Get test name from plusargs or use default
-        if (!$value$plusargs("TEST=%s", test_name)) begin
-            test_name = DEFAULT_TEST;
-        end
-
-        // Get index from plusargs or use default
-        if (!$value$plusargs("IDX=%d", test_idx)) begin
-            test_idx = DEFAULT_IDX;
-        end
-
-        // Build file path dynamically
-        fname = $sformatf("/mnt/c/CAO/lab8/tests/%s/dmem_%0d.mem", test_name, test_idx);
-
-        $display("IMEM: Loading memory from %s", fname);
-        $readmemh(fname, dmem);
-
-    `else
-        $readmemh("/mnt/c/Computer_Architecture/Core/tests/riscv_mmu_stress_test/dmem_0.mem", dmem);
+        $readmemh("/mnt/c/Computer_Architecture/RISCV_Pripelined_Core/Core_and_Verilator/tests/dmem_0.mem", dmem);
+    `else 
+        $readmemh("/mnt/c/Computer_Architecture/RISCV_Pripelined_Core/Core_and_Verilator/tests/dmem.mem", dmem);
     `endif
 end
 
 endmodule
-
